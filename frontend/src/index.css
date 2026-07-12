@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-surface-soft text-ink-900 font-body antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+  ::selection {
+    @apply bg-brand-100 text-brand-900;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl border border-ink-300/40 shadow-card;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 text-white font-medium px-5 py-2.5 shadow-soft hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-white text-ink-700 font-medium px-5 py-2.5 border border-ink-300/60 hover:border-brand-400 hover:text-brand-600 transition-colors;
+  }
+  .input-field {
+    @apply w-full rounded-xl border border-ink-300/60 bg-white px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-400 transition-shadow;
+  }
+  .label-text {
+    @apply block text-xs font-semibold uppercase tracking-wide text-ink-500 mb-1.5;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+@keyframes drift-one {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, -40px) scale(1.15); }
+  66% { transform: translate(-30px, 30px) scale(0.9); }
+}
+@keyframes drift-two {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, 35px) scale(1.1); }
+  66% { transform: translate(40px, -25px) scale(0.95); }
+}
+@keyframes drift-three {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, 40px) scale(1.1); }
+}
+@keyframes float-dot {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-220px); opacity: 0; }
+}
+
+.hero-blob-one {
+  animation: drift-one 14s ease-in-out infinite;
+}
+.hero-blob-two {
+  animation: drift-two 17s ease-in-out infinite;
+}
+.hero-blob-three {
+  animation: drift-three 11s ease-in-out infinite;
+}
+.hero-dot {
+  animation: float-dot linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@keyframes assistant-bob-anim {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes assistant-blink-anim {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+.assistant-bob {
+  animation: assistant-bob-anim 3s ease-in-out infinite;
+  cursor: pointer;
+}
+.assistant-eye {
+  transform-origin: center;
+  animation: assistant-blink-anim 4s ease-in-out infinite;
+}
