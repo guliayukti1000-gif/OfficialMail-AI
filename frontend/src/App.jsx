@@ -9,6 +9,7 @@ import InboxSummary from './pages/InboxSummary'
 import Templates from './pages/Templates'
 import History from './pages/History'
 import Settings from './pages/Settings'
+import BulkSend from "./pages/BulkSend";
 
 const TITLES = {
   '/': ['Home', 'Welcome back — draft your next email in seconds.'],
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/templates"element={<Templates />} />
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/bulk-send" element={<BulkSend />} />
           </Routes>
         </main>
       </div>

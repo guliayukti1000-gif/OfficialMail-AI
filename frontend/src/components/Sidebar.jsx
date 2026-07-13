@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { Mail, Home, PenSquare, Inbox, LayoutTemplate, History, Settings, Sparkles } from 'lucide-react'
+import { Mail, Home, PenSquare, Inbox, LayoutTemplate, History, Settings, Sparkles,Send } from 'lucide-react'
 
 const links = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/generate', label: 'Generate Email', icon: PenSquare },
   { to: '/inbox-summary', label: 'Inbox Summary', icon: Inbox },
   { to: '/templates', label: 'Templates', icon: LayoutTemplate },
+  { to: '/bulk-send', label: 'Bulk Send', icon: Send },
   { to: '/history', label: 'History', icon: History },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
