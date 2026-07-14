@@ -65,3 +65,6 @@ class ExportRequest(BaseModel):
     subject: str
     body: str
     format: str = "pdf"  # pdf | docx
+
+class BulkGenerateEmailRequest(BaseModel):
+    requests: list[GenerateEmailRequest]

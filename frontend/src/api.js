@@ -7,6 +7,12 @@ const client = axios.create({ baseURL: API_BASE })
 export const generateEmail = (payload) =>
   client.post('/api/generate-email', payload).then((r) => r.data)
 
+export const generateEmailBulk = (payload) =>
+  client.post('/api/generate-email-bulk', payload).then((r) => r.data)
+
+export const sendBulkEmail = (payload) =>
+  client.post('/api/send-bulk-email', payload).then((r) => r.data)
+
 export const aiProcess = (action, text, target_language) =>
   client.post('/api/ai/process', { action, text, target_language }).then((r) => r.data)
 

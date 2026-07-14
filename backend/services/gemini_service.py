@@ -7,8 +7,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
-MODEL_NAME = "gemini-flash-latest"
-
+MODEL_NAME = "gemini-3.1-flash-lite"
 
 def _get_model():
     if not GEMINI_API_KEY:

@@ -6,10 +6,14 @@ from dotenv import load_dotenv
 _ENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 load_dotenv(dotenv_path=_ENV_PATH)
 
+from pydantic import BaseModel
+from email_service import send_bulk_emails
+
 from models import (
     GenerateEmailRequest, AIEditRequest, AIEditResponse,
     InboxSummaryRequest, InboxSummaryResponse,
     TemplateModel, HistoryItem, ExportRequest,
+    BulkGenerateEmailRequest,
 )
 from services import gemini_service, firebase_service, export_service
 
@@ -42,7 +46,24 @@ def generate_email(payload: GenerateEmailRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+    
+@app.post("/api/generate-email-bulk")
+def generate_email_bulk(payload: BulkGenerateEmailRequest):
+    results = []
+    for req in payload.requests:
+        try:
+            result = gemini_service.generate_email(req.model_dump())
+            results.append({"success": True, "data": result})
+        except Exception as e:
+            results.append({"success": False, "error": str(e)})
+    return {"results": results}
+class SendBulkEmailRequest(BaseModel):
+    emails: list[dict] # [{ "to": str, "subject": str, "body": str }, ...]
+    
+@app.post("/api/send-bulk-email")
+def send_bulk_email(payload: SendBulkEmailRequest):
+    results = send_bulk_emails(payload.emails)
+    return {"results": results}
 
 @app.post("/api/ai/process", response_model=AIEditResponse)
 def ai_process(payload: AIEditRequest):
@@ -53,7 +74,6 @@ def ai_process(payload: AIEditRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.post("/api/summarize-inbox", response_model=InboxSummaryResponse)
 def summarize_inbox(payload: InboxSummaryRequest):
