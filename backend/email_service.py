@@ -1,19 +1,29 @@
 import os
 import traceback
-import resend
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
-resend.api_key = os.getenv("RESEND_API_KEY")
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
 
-FROM_EMAIL = "OfficialMail AI <onboarding@resend.dev>"
+FROM_EMAIL = "officialmailai.hackathon@gmail.com"
+FROM_NAME = "OfficialMail AI"
 
 
 def send_single_email(to_email: str, subject: str, body: str):
-    resend.Emails.send({
-        "from": FROM_EMAIL,
-        "to": [to_email],
-        "subject": subject,
-        "text": body,
-    })
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration)
+    )
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": to_email}],
+        sender={"name": FROM_NAME, "email": FROM_EMAIL},
+        subject=subject,
+        text_content=body,
+    )
+    try:
+        api_instance.send_transac_email(send_smtp_email)
+    except ApiException as e:
+        raise Exception(str(e))
 
 
 def send_bulk_emails(emails: list):
