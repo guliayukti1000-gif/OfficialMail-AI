@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Inbox, CalendarDays, Users, Clock4, ListChecks, ScanSearch } from 'lucide-react'
+import { Inbox, CalendarDays, Users, Clock4, ListChecks, ScanSearch, Briefcase, Smile, Zap } from 'lucide-react'
 import { Card, Spinner, PriorityBadge } from '../components/UI'
 import { summarizeInbox, generateReplies, aiProcess } from '../api'
 
@@ -46,57 +46,87 @@ function ReplyLoadingAnimation() {
   )
 }
 
-function ReplyCard({ tone, reply, onUpdate }) {
+const TONE_META = {
+  Formal: { Icon: Briefcase, colorClass: 'bg-blue-100 text-blue-700' },
+  Friendly: { Icon: Smile, colorClass: 'bg-orange-100 text-orange-700' },
+  Concise: { Icon: Zap, colorClass: 'bg-violet-100 text-violet-700' },
+}
+
+function ReplyPanel({ replies, onUpdate }) {
+  const [activeIndex, setActiveIndex] = useState(0)
   const [showActions, setShowActions] = useState(false)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(reply)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  const active = replies[activeIndex]
+  const meta = TONE_META[active.tone] || { icon: 'ti-mail', colorClass: 'c-gray' }
 
   const runAction = async (action, target_language) => {
     setBusy(true)
     try {
-      const data = await aiProcess(action, reply, target_language)
-      onUpdate(data.result)
+      const data = await aiProcess(action, active.reply, target_language)
+      onUpdate(activeIndex, data.result)
     } catch (e) {
-      // silently ignore for now, keep existing reply text
+      // silently ignore, keep existing text
     } finally {
       setBusy(false)
     }
   }
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(active.reply)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
   return (
-    <div className="border border-ink-200/60 rounded-xl p-3 bg-white/60">
-      <div className="flex items-center justify-between mb-1.5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-brand-500">{tone}</p>
-        <div className="flex items-center gap-3">
-          <button className="text-xs text-ink-500 hover:text-brand-500" onClick={handleCopy}>
-            {copied ? 'Copied!' : 'Copy'}
-          </button>
-          <button
-            className="text-xs text-ink-500 hover:text-brand-500"
-            onClick={() => setShowActions((s) => !s)}
-          >
-            {showActions ? 'Hide options' : 'Edit'}
-          </button>
-        </div>
+    <div className="flex gap-3">
+      <div className="flex flex-col gap-2 w-28 flex-shrink-0">
+        {replies.map((r, i) => {
+          const m = TONE_META[r.tone] || { icon: 'ti-mail', colorClass: 'c-gray' }
+          const isActive = i === activeIndex
+          return (
+            <button
+              key={i}
+              onClick={() => { setActiveIndex(i); setShowActions(false) }}
+              className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-left transition-colors ${
+                isActive ? m.colorClass : 'bg-surface-muted text-ink-500'
+              }`}
+            >
+              <m.Icon size={15} />
+              {r.tone}
+            </button>
+          )
+        })}
       </div>
-      <p className="text-sm text-ink-800 whitespace-pre-line leading-relaxed">
-        {busy ? 'Updating…' : reply}
-      </p>
-      {showActions && (
-        <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-ink-200/50">
-          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('expand')}>Expand</button>
-          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('shorten')}>Shorten</button>
-          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('make_formal')}>Formal</button>
-          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('make_friendly')}>Friendly</button>
-          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('translate', 'Hindi')}>Translate (Hindi)</button>
+      <div className="flex-1 border-l border-ink-200/60 pl-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${meta.colorClass}`}>
+          <meta.Icon size={13} />
+            {active.tone}
+          </span>
+          <div className="flex items-center gap-3">
+            <button className="text-xs text-ink-500 hover:text-brand-500" onClick={handleCopy}>
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+            <button className="text-xs text-ink-500 hover:text-brand-500" onClick={() => setShowActions((s) => !s)}>
+              {showActions ? 'Hide options' : 'Edit'}
+            </button>
+          </div>
         </div>
-      )}
+        <p className="text-sm text-ink-800 whitespace-pre-line leading-relaxed">
+          {busy ? 'Updating…' : active.reply}
+        </p>
+        {showActions && (
+          <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-ink-200/50">
+            <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('expand')}>Expand</button>
+            <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('shorten')}>Shorten</button>
+            <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('make_formal')}>Formal</button>
+            <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('make_friendly')}>Friendly</button>
+            <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('translate', 'Hindi')}>Translate (Hindi)</button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -173,16 +203,7 @@ export default function InboxSummary() {
               <h3 className="font-display font-semibold text-ink-900 mb-3">Suggested Replies</h3>
               {repliesLoading && <ReplyLoadingAnimation />}
               {!repliesLoading && replies && replies.length > 0 && (
-                <div className="space-y-3">
-                  {replies.map((r, i) => (
-                    <ReplyCard
-                      key={i}
-                      tone={r.tone}
-                      reply={r.reply}
-                      onUpdate={(newText) => updateReply(i, newText)}
-                    />
-                  ))}
-                </div>
+                <ReplyPanel replies={replies} onUpdate={updateReply} />
               )}
             </div>
           </div>
