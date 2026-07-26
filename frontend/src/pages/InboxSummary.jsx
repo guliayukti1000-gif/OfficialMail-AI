@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Inbox, CalendarDays, Users, Clock4, ListChecks, ScanSearch } from 'lucide-react'
 import { Card, Spinner, PriorityBadge } from '../components/UI'
-import { summarizeInbox } from '../api'
+import { summarizeInbox, generateReplies, aiProcess } from '../api'
 
 function ListSection({ icon: Icon, title, items }) {
   if (!items || items.length === 0) return null
@@ -21,11 +21,93 @@ function ListSection({ icon: Icon, title, items }) {
   )
 }
 
+function ReplyLoadingAnimation() {
+  return (
+    <div className="flex flex-col items-center justify-center py-10">
+      <div className="relative w-40 h-24">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-24 h-24 rounded-full bg-brand-200/40 blur-2xl animate-pulse" />
+        </div>
+        <svg
+          viewBox="0 0 200 120"
+          className="absolute inset-0 w-full h-full animate-[float_3s_ease-in-out_infinite]"
+        >
+          <ellipse cx="70" cy="70" rx="38" ry="26" fill="#ffffff" opacity="0.95" />
+          <ellipse cx="105" cy="55" rx="46" ry="32" fill="#ffffff" opacity="0.95" />
+          <ellipse cx="140" cy="70" rx="34" ry="24" fill="#ffffff" opacity="0.95" />
+          <ellipse cx="100" cy="82" rx="70" ry="22" fill="#ffffff" />
+        </svg>
+        <span className="absolute top-1 left-6 w-1.5 h-1.5 rounded-full bg-brand-300 animate-ping" />
+        <span className="absolute top-4 right-8 w-1 h-1 rounded-full bg-brand-300 animate-ping [animation-delay:0.6s]" />
+        <span className="absolute bottom-8 left-10 w-1 h-1 rounded-full bg-brand-300 animate-ping [animation-delay:1.2s]" />
+      </div>
+      <p className="text-sm text-ink-500 mt-2 animate-pulse">Dreaming up thoughtful replies…</p>
+    </div>
+  )
+}
+
+function ReplyCard({ tone, reply, onUpdate }) {
+  const [showActions, setShowActions] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(reply)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
+  const runAction = async (action, target_language) => {
+    setBusy(true)
+    try {
+      const data = await aiProcess(action, reply, target_language)
+      onUpdate(data.result)
+    } catch (e) {
+      // silently ignore for now, keep existing reply text
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="border border-ink-200/60 rounded-xl p-3 bg-white/60">
+      <div className="flex items-center justify-between mb-1.5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-brand-500">{tone}</p>
+        <div className="flex items-center gap-3">
+          <button className="text-xs text-ink-500 hover:text-brand-500" onClick={handleCopy}>
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+          <button
+            className="text-xs text-ink-500 hover:text-brand-500"
+            onClick={() => setShowActions((s) => !s)}
+          >
+            {showActions ? 'Hide options' : 'Edit'}
+          </button>
+        </div>
+      </div>
+      <p className="text-sm text-ink-800 whitespace-pre-line leading-relaxed">
+        {busy ? 'Updating…' : reply}
+      </p>
+      {showActions && (
+        <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-ink-200/50">
+          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('expand')}>Expand</button>
+          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('shorten')}>Shorten</button>
+          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('make_formal')}>Formal</button>
+          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('make_friendly')}>Friendly</button>
+          <button className="btn-secondary !px-2.5 !py-1 text-xs" disabled={busy} onClick={() => runAction('translate', 'Hindi')}>Translate (Hindi)</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function InboxSummary() {
   const [text, setText] = useState('')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [replies, setReplies] = useState(null)
+  const [repliesLoading, setRepliesLoading] = useState(false)
 
   const handleSummarize = async () => {
     if (!text.trim()) {
@@ -34,14 +116,24 @@ export default function InboxSummary() {
     }
     setError('')
     setLoading(true)
+    setReplies(null)
     try {
       const data = await summarizeInbox(text)
       setResult(data)
+      setRepliesLoading(true)
+      generateReplies(text)
+        .then((r) => setReplies(r.replies))
+        .catch(() => setReplies([]))
+        .finally(() => setRepliesLoading(false))
     } catch (e) {
       setError('Could not summarize this email. Please try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const updateReply = (index, newText) => {
+    setReplies((prev) => prev.map((r, i) => (i === index ? { ...r, reply: newText } : r)))
   }
 
   return (
@@ -76,6 +168,23 @@ export default function InboxSummary() {
             <ListSection icon={Users} title="Important People" items={result.important_people} />
             <ListSection icon={Clock4} title="Deadlines" items={result.deadlines} />
             <ListSection icon={ListChecks} title="Action Items" items={result.action_items} />
+
+            <div className="pt-2 border-t border-ink-200/50">
+              <h3 className="font-display font-semibold text-ink-900 mb-3">Suggested Replies</h3>
+              {repliesLoading && <ReplyLoadingAnimation />}
+              {!repliesLoading && replies && replies.length > 0 && (
+                <div className="space-y-3">
+                  {replies.map((r, i) => (
+                    <ReplyCard
+                      key={i}
+                      tone={r.tone}
+                      reply={r.reply}
+                      onUpdate={(newText) => updateReply(i, newText)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center py-20 border-dashed border rounded-xl border-ink-300/50">

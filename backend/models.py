@@ -44,6 +44,18 @@ class InboxSummaryResponse(BaseModel):
     action_items: List[str] = []
     priority: str = "Medium"
 
+class GenerateRepliesRequest(BaseModel):
+    email_text: str
+
+
+class ReplyDraft(BaseModel):
+    tone: str
+    reply: str
+
+
+class GenerateRepliesResponse(BaseModel):
+    replies: List[ReplyDraft]
+
 
 class TemplateModel(BaseModel):
     id: Optional[str] = None

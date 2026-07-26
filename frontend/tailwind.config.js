@@ -38,6 +38,12 @@ export default {
         xl: '14px',
         '2xl': '20px',
       },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
+      },
     },
   },
   plugins: [],

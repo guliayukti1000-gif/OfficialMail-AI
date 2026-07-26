@@ -12,9 +12,11 @@ from email_service import send_bulk_emails
 from models import (
     GenerateEmailRequest, AIEditRequest, AIEditResponse,
     InboxSummaryRequest, InboxSummaryResponse,
+    GenerateRepliesRequest, GenerateRepliesResponse,
     TemplateModel, HistoryItem, ExportRequest,
     BulkGenerateEmailRequest,
 )
+
 from services import gemini_service, firebase_service, export_service
 
 app = FastAPI(title="OfficialMail AI API", version="1.0.0")
@@ -82,18 +84,15 @@ def summarize_inbox(payload: InboxSummaryRequest):
         return InboxSummaryResponse(**result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-class SpamScoreRequest(BaseModel):
-    email_text: str
-
-
-@app.post("/api/spam-score")
-def spam_score(payload: SpamScoreRequest):
+    
+@app.post("/api/generate-replies", response_model=GenerateRepliesResponse)
+def generate_replies(payload: GenerateRepliesRequest):
     try:
-        result = gemini_service.analyze_spam_score(payload.email_text)
-        return result
+        result = gemini_service.generate_replies(payload.email_text)
+        return GenerateRepliesResponse(replies=result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.get("/api/templates")

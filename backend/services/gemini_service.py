@@ -153,3 +153,27 @@ If the email looks clean, reasons and suggestions can be short/positive (e.g. "N
             "suggestions": [],
         }
     return parsed
+def generate_replies(email_text: str) -> list:
+    model = _get_model()
+    prompt = f"""You are an expert professional email assistant. Read the following email and write 3 possible replies to it, each in a different tone, that correctly and appropriately respond to what the email is asking or saying.
+
+Email:
+{email_text}
+
+Return ONLY valid JSON, no markdown fences, in exactly this shape:
+[
+  {{"tone": "Formal", "reply": "..."}},
+  {{"tone": "Friendly", "reply": "..."}},
+  {{"tone": "Concise", "reply": "..."}}
+]
+Each reply should be a complete, ready-to-send email body (greeting + body + closing), accurately reflecting the meaning and required response to the original email. Keep formal language professional and never casual/slang, even in the Friendly tone — Friendly means warmer, not informal.
+"""
+    response = model.generate_content(prompt)
+    raw = _clean_json(response.text)
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, list) and len(parsed) > 0:
+            return parsed
+    except json.JSONDecodeError:
+        pass
+    return [{"tone": "Formal", "reply": raw}]
