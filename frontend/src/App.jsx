@@ -9,7 +9,8 @@ import InboxSummary from './pages/InboxSummary'
 import Templates from './pages/Templates'
 import History from './pages/History'
 import Settings from './pages/Settings'
-import BulkSend from "./pages/BulkSend";
+import BulkSend from "./pages/BulkSend"
+import SpamChecker from "./pages/SpamChecker";
 
 const TITLES = {
   '/': ['Home', 'Welcome back — draft your next email in seconds.'],
@@ -18,6 +19,7 @@ const TITLES = {
   '/templates': ['Templates', 'Ready-made starting points for common emails.'],
   '/history': ['History', 'Everything you generated, saved automatically.'],
   '/settings': ['Settings', 'Manage your defaults and preferences.'],
+  '/spam-checker': ['Spam Checker', 'Analyze your email for spam risk before sending.'],
 }
 
 export default function App() {
@@ -39,6 +41,7 @@ export default function App() {
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/bulk-send" element={<BulkSend />} />
+            <Route path="/spam-checker" element={<SpamChecker />} />
           </Routes>
         </main>
       </div>

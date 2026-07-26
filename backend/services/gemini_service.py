@@ -122,3 +122,34 @@ If a field has no items, return an empty array. Priority should reflect urgency 
             "action_items": [],
             "priority": "Medium",
         }
+def analyze_spam_score(email_text: str) -> dict:
+    model = _get_model()
+    prompt = f"""You are an expert email deliverability analyst. Analyze the following email for spam risk, the way an email service provider's spam filter would.
+
+Email:
+{email_text}
+
+Consider things like: excessive capitalization, spammy trigger words ("free", "guarantee", "act now", "click here", etc.), excessive punctuation/exclamation marks, misleading subject lines, poor formatting, missing personalization, suspicious links, and overly salesy tone.
+
+Return ONLY valid JSON, no markdown fences, in exactly this shape:
+{{
+  "spam_score": 0-100 (integer, where 0 = definitely not spam, 100 = definitely spam),
+  "risk_level": "Low" | "Medium" | "High",
+  "reasons": ["short reason 1", "short reason 2", ...],
+  "suggestions": ["short actionable suggestion 1", "short actionable suggestion 2", ...]
+}}
+risk_level should be "Low" if spam_score < 30, "Medium" if 30-65, "High" if above 65.
+If the email looks clean, reasons and suggestions can be short/positive (e.g. "No major issues found").
+"""
+    response = model.generate_content(prompt)
+    raw = _clean_json(response.text)
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        parsed = {
+            "spam_score": 50,
+            "risk_level": "Medium",
+            "reasons": ["Could not parse AI response"],
+            "suggestions": [],
+        }
+    return parsed

@@ -1,26 +1,29 @@
-import smtplib
 import os
 import traceback
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
-GMAIL_ADDRESS = (os.getenv("GMAIL_ADDRESS") or "").strip()
-GMAIL_APP_PASSWORD = (os.getenv("GMAIL_APP_PASSWORD") or "").strip().replace(" ", "")
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
+
+FROM_EMAIL = "officialmailai.hackathon@gmail.com"
+FROM_NAME = "OfficialMail AI"
 
 
 def send_single_email(to_email: str, subject: str, body: str):
-    msg = MIMEMultipart()
-    msg["From"] = GMAIL_ADDRESS
-    msg["To"] = to_email
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain"))
-
-    server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration)
+    )
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": to_email}],
+        sender={"name": FROM_NAME, "email": FROM_EMAIL},
+        subject=subject,
+        text_content=body,
+    )
     try:
-        server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
-        server.sendmail(GMAIL_ADDRESS, to_email, msg.as_string())
-    finally:
-        server.quit()
+        api_instance.send_transac_email(send_smtp_email)
+    except ApiException as e:
+        raise Exception(str(e))
 
 
 def send_bulk_emails(emails: list):

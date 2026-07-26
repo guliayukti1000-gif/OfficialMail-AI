@@ -83,6 +83,18 @@ def summarize_inbox(payload: InboxSummaryRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+class SpamScoreRequest(BaseModel):
+    email_text: str
+
+
+@app.post("/api/spam-score")
+def spam_score(payload: SpamScoreRequest):
+    try:
+        result = gemini_service.analyze_spam_score(payload.email_text)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/templates")
 def list_templates():

@@ -19,6 +19,9 @@ export const aiProcess = (action, text, target_language) =>
 export const summarizeInbox = (email_text) =>
   client.post('/api/summarize-inbox', { email_text }).then((r) => r.data)
 
+export const analyzeSpamScore = (email_text) =>
+  client.post('/api/spam-score', { email_text }).then((r) => r.data)
+
 export const getTemplates = () =>
   client.get('/api/templates').then((r) => r.data)
 
