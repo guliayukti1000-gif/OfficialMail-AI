@@ -87,6 +87,7 @@ class TemplateModel(BaseModel):
     content: str
     user_id: Optional[str] = "guest"
     is_default: Optional[bool] = False
+    color: Optional[str] = None
 
 class HistoryItem(BaseModel):
     id: Optional[str] = None
