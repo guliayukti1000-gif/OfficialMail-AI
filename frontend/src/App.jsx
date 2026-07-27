@@ -30,7 +30,7 @@ function AppShell() {
   const [title, subtitle] = TITLES[location.pathname] || TITLES['/']
 
   return (
-    <div className="flex min-h-screen bg-surface-soft">
+    <div className="flex min-h-screen bg-[#161C2E]">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 min-w-0">
         <Navbar title={title} subtitle={subtitle} onMenuClick={() => setSidebarOpen(true)} />

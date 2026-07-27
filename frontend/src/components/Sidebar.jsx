@@ -33,7 +33,7 @@ export default function Sidebar({ open, onClose }) {
         />
       )}
       <aside
-        className={`fixed lg:static top-0 left-0 h-full w-64 bg-white border-r border-ink-300/40 z-40 flex flex-col transition-transform duration-200 ${
+        className={`fixed lg:static top-0 left-0 h-full w-64 bg-[#0B0F1A] border-r border-white/10 z-40 flex flex-col transition-transform duration-200 ${
           open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -42,8 +42,8 @@ export default function Sidebar({ open, onClose }) {
             <Mail size={18} className="text-white" />
           </div>
           <div>
-            <p className="font-display font-bold text-ink-900 leading-none">OfficialMail</p>
-            <p className="text-[11px] font-mono text-brand-500 tracking-wide">AI</p>
+            <p className="font-display font-bold text-white leading-none">OfficialMail</p>
+            <p className="text-[11px] font-mono text-blue-400 tracking-wide">AI</p>
           </div>
         </div>
 
@@ -57,8 +57,8 @@ export default function Sidebar({ open, onClose }) {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-brand-50 text-brand-600'
-                    : 'text-ink-700 hover:bg-surface-muted'
+                    ? 'bg-white/10 text-blue-400'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
                 }`
               }
             >
@@ -76,12 +76,12 @@ export default function Sidebar({ open, onClose }) {
 
         {user && (
           <div className="px-3 pb-4">
-            <div className="flex items-center gap-2 px-3 py-2 text-xs text-ink-500 truncate">
+            <div className="flex items-center gap-2 px-3 py-2 text-xs text-slate-500 truncate">
               {user.email}
             </div>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ink-700 hover:bg-surface-muted transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-slate-200 transition-colors"
             >
               <LogOut size={18} strokeWidth={2} />
               Logout

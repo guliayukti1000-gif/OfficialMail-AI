@@ -6,13 +6,21 @@ import { getTemplates, createTemplate } from '../api'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Templates() {
+  const COLOR_OPTIONS = [
+  { name: 'Purple', value: '#8B5CF6' },
+  { name: 'Pink', value: '#EC4899' },
+  { name: 'Amber', value: '#F59E0B' },
+  { name: 'Emerald', value: '#10B981' },
+  { name: 'Rose', value: '#F43F5E' },
+  { name: 'Cyan', value: '#06B6D4' },
+]
   const { user } = useAuth()
   const [templates, setTemplates] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [newTemplate, setNewTemplate] = useState({ title: '', category: '', content: '' })
+  const [newTemplate, setNewTemplate] = useState({ title: '', category: '', content: '', color: COLOR_OPTIONS[0].value })
   const navigate = useNavigate()
 
   const load = () => {
@@ -38,7 +46,7 @@ export default function Templates() {
     setSaving(true)
     try {
       await createTemplate({ ...newTemplate, user_id: user.uid })
-      setNewTemplate({ title: '', category: '', content: '' })
+      setNewTemplate({ title: '', category: '', content: '', color: COLOR_OPTIONS[0].value })
       setShowForm(false)
       load()
     } catch (e) {
@@ -83,6 +91,23 @@ export default function Templates() {
               value={newTemplate.content}
               onChange={(e) => setNewTemplate((t) => ({ ...t, content: e.target.value }))}
             />
+            <div>
+              <label className="label-text">Card Color</label>
+              <div className="flex gap-2">
+                {COLOR_OPTIONS.map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() => setNewTemplate((t) => ({ ...t, color: c.value }))}
+                    title={c.name}
+                    className={`w-8 h-8 rounded-full transition-transform ${
+                      newTemplate.color === c.value ? 'ring-2 ring-offset-2 ring-brand-500 scale-110' : ''
+                    }`}
+                    style={{ backgroundColor: c.value }}
+                  />
+                ))}
+              </div>
+            </div>
             <button className="btn-primary" onClick={handleSave} disabled={saving}>
               {saving ? <Spinner /> : <Plus size={16} />}
               {saving ? 'Saving…' : 'Save Template'}
@@ -101,11 +126,27 @@ export default function Templates() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {templates.map((tpl) => (
-          <Card key={tpl.id} className="flex flex-col">
-            <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center mb-3">
-              <LayoutTemplate size={18} className="text-brand-500" />
+          <Card
+            key={tpl.id}
+            className="flex flex-col"
+            style={!tpl.is_default && tpl.color ? { borderTop: `3px solid ${tpl.color}` } : undefined}
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+              style={!tpl.is_default && tpl.color ? { backgroundColor: `${tpl.color}20` } : undefined}
+            >
+              <LayoutTemplate
+                size={18}
+                style={!tpl.is_default && tpl.color ? { color: tpl.color } : undefined}
+                className={!tpl.is_default && tpl.color ? '' : 'text-brand-500'}
+              />
             </div>
-            <p className="text-xs font-semibold text-brand-500 uppercase tracking-wide">{tpl.category}</p>
+            <p
+              className="text-xs font-semibold uppercase tracking-wide"
+              style={!tpl.is_default && tpl.color ? { color: tpl.color } : undefined}
+            >
+              {!tpl.is_default && tpl.color ? tpl.category : <span className="text-brand-500">{tpl.category}</span>}
+            </p>
             <h3 className="font-display font-semibold text-ink-900 mt-1">{tpl.title}</h3>
             <p className="text-sm text-ink-500 mt-2 line-clamp-3">{tpl.content}</p>
             <button
