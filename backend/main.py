@@ -12,6 +12,7 @@ from email_service import send_bulk_emails
 from models import (
     GenerateEmailRequest, AIEditRequest, AIEditResponse,
     InboxSummaryRequest, InboxSummaryResponse,
+    SpamScoreRequest, SpamScoreResponse,
     GenerateRepliesRequest, GenerateRepliesResponse,
     TemplateModel, HistoryItem, ExportRequest,
     BulkGenerateEmailRequest,
@@ -48,7 +49,8 @@ def generate_email(payload: GenerateEmailRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
 @app.post("/api/generate-email-bulk")
 def generate_email_bulk(payload: BulkGenerateEmailRequest):
     results = []
@@ -59,13 +61,17 @@ def generate_email_bulk(payload: BulkGenerateEmailRequest):
         except Exception as e:
             results.append({"success": False, "error": str(e)})
     return {"results": results}
+
+
 class SendBulkEmailRequest(BaseModel):
-    emails: list[dict] # [{ "to": str, "subject": str, "body": str }, ...]
-    
+    emails: list[dict]
+
+
 @app.post("/api/send-bulk-email")
 def send_bulk_email(payload: SendBulkEmailRequest):
     results = send_bulk_emails(payload.emails)
     return {"results": results}
+
 
 @app.post("/api/ai/process", response_model=AIEditResponse)
 def ai_process(payload: AIEditRequest):
@@ -77,6 +83,7 @@ def ai_process(payload: AIEditRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/api/summarize-inbox", response_model=InboxSummaryResponse)
 def summarize_inbox(payload: InboxSummaryRequest):
     try:
@@ -84,7 +91,17 @@ def summarize_inbox(payload: InboxSummaryRequest):
         return InboxSummaryResponse(**result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
+@app.post("/api/spam-score", response_model=SpamScoreResponse)
+def spam_score(payload: SpamScoreRequest):
+    try:
+        result = gemini_service.analyze_spam_score(payload.email_text)
+        return SpamScoreResponse(**result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/generate-replies", response_model=GenerateRepliesResponse)
 def generate_replies(payload: GenerateRepliesRequest):
     try:
@@ -92,7 +109,6 @@ def generate_replies(payload: GenerateRepliesRequest):
         return GenerateRepliesResponse(replies=result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 
 @app.get("/api/templates")

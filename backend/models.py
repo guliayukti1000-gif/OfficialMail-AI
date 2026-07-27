@@ -44,6 +44,16 @@ class InboxSummaryResponse(BaseModel):
     action_items: List[str] = []
     priority: str = "Medium"
 
+class SpamScoreRequest(BaseModel):
+    email_text: str
+
+
+class SpamScoreResponse(BaseModel):
+    spam_score: int
+    risk_level: str
+    reasons: List[str] = []
+    suggestions: List[str] = []
+
 class GenerateRepliesRequest(BaseModel):
     email_text: str
 

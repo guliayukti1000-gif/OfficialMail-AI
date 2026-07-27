@@ -1,6 +1,7 @@
 // Firebase client SDK config — used only if you add client-side Auth later.
 // Get these values from Firebase Console > Project Settings > General > Your apps > Web app
 import { initializeApp } from 'firebase/app'
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -12,3 +13,5 @@ const firebaseConfig = {
 }
 
 export const app = initializeApp(firebaseConfig)
+export const auth = getAuth(app)
+export const googleProvider = new GoogleAuthProvider()

@@ -45,6 +45,22 @@ function ReplyLoadingAnimation() {
     </div>
   )
 }
+function WaveLoadingAnimation() {
+  return (
+    <div className="h-full flex flex-col items-center justify-center text-center py-20">
+      <div className="flex items-end gap-1 h-10 mb-4">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <span
+            key={i}
+            className="w-1.5 rounded-full bg-brand-400 animate-[wave_1s_ease-in-out_infinite]"
+            style={{ height: '100%', animationDelay: `${i * 0.1}s` }}
+          />
+        ))}
+      </div>
+      <p className="text-sm text-ink-500">Reading your email…</p>
+    </div>
+  )
+}
 
 const TONE_META = {
   Formal: { Icon: Briefcase, colorClass: 'bg-blue-100 text-blue-700' },
@@ -207,6 +223,8 @@ export default function InboxSummary() {
               )}
             </div>
           </div>
+        ) : loading ? (
+          <WaveLoadingAnimation />
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center py-20 border-dashed border rounded-xl border-ink-300/50">
             <ScanSearch size={28} className="text-ink-300 mb-3" />

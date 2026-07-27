@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import FloatingAssistant from './components/FloatingAssistant'
@@ -10,7 +10,9 @@ import Templates from './pages/Templates'
 import History from './pages/History'
 import Settings from './pages/Settings'
 import BulkSend from "./pages/BulkSend"
-import SpamChecker from "./pages/SpamChecker";
+import SpamChecker from "./pages/SpamChecker"
+import Login from "./pages/Login"
+import { useAuth } from './hooks/useAuth'
 
 const TITLES = {
   '/': ['Home', 'Welcome back — draft your next email in seconds.'],
@@ -22,7 +24,7 @@ const TITLES = {
   '/spam-checker': ['Spam Checker', 'Analyze your email for spam risk before sending.'],
 }
 
-export default function App() {
+function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const [title, subtitle] = TITLES[location.pathname] || TITLES['/']
@@ -37,7 +39,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/generate" element={<GenerateEmail />} />
             <Route path="/inbox-summary" element={<InboxSummary />} />
-            <Route path="/templates"element={<Templates />} />
+            <Route path="/templates" element={<Templates />} />
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/bulk-send" element={<BulkSend />} />
@@ -47,5 +49,24 @@ export default function App() {
       </div>
       <FloatingAssistant />
     </div>
+  )
+}
+
+export default function App() {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-soft">
+        <p className="text-sm text-ink-500">Loading…</p>
+      </div>
+    )
+  }
+
+  return (
+    <Routes>
+      <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+      <Route path="/*" element={user ? <AppShell /> : <Navigate to="/login" />} />
+    </Routes>
   )
 }
