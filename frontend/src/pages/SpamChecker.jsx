@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ShieldAlert, ScanSearch, AlertTriangle, Lightbulb } from 'lucide-react'
 import { Card, Spinner } from '../components/UI'
 import { analyzeSpamScore } from '../api'
+import useSessionState from '../hooks/useSessionState'
 
 function riskColor(level) {
   if (level === 'Low') return { ring: '#16a34a', bg: 'bg-green-50', text: 'text-green-700', badge: 'bg-green-100 text-green-700' }
@@ -39,10 +40,39 @@ function ScoreRing({ score, level }) {
 }
 
 export default function SpamChecker() {
-  const [text, setText] = useState('')
-  const [result, setResult] = useState(null)
+  const [text, setText] = useSessionState('spamChecker_text', '')
+  const [result, setResult] = useSessionState('spamChecker_result', null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [flashing, setFlashing] = useState(false)
+  const audioCtxRef = useRef(null)
+
+  const playBeep = () => {
+    try {
+      const ctx = audioCtxRef.current || new (window.AudioContext || window.webkitAudioContext)()
+      audioCtxRef.current = ctx
+      const oscillator = ctx.createOscillator()
+      const gain = ctx.createGain()
+      oscillator.type = 'sine'
+      oscillator.frequency.value = 880
+      gain.gain.value = 0.15
+      oscillator.connect(gain)
+      gain.connect(ctx.destination)
+      oscillator.start()
+      oscillator.stop(ctx.currentTime + 0.3)
+    } catch (e) {
+      // audio blocked/unsupported — fail silently
+    }
+  }
+
+  useEffect(() => {
+    if (result?.risk_level === 'High') {
+      setFlashing(true)
+      playBeep()
+      const timer = setTimeout(() => setFlashing(false), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [result])
 
   const handleAnalyze = async () => {
     if (!text.trim()) {
@@ -85,7 +115,17 @@ export default function SpamChecker() {
       <Card>
         {result ? (
           <div className="space-y-6">
-            <div className="flex flex-col items-center">
+            <style>{`
+              @keyframes flashRed {
+                0%, 100% { background-color: transparent; }
+                50% { background-color: rgba(220, 38, 38, 0.18); }
+              }
+              .flash-red {
+                animation: flashRed 0.5s ease-in-out 6;
+                border-radius: 1rem;
+              }
+            `}</style>
+            <div className={`flex flex-col items-center py-2 ${flashing ? 'flash-red' : ''}`}>
               <ScoreRing score={result.spam_score} level={result.risk_level} />
               <span className={`mt-3 px-3 py-1 rounded-full text-xs font-semibold ${colors.badge}`}>
                 {result.risk_level} Risk

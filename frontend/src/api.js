@@ -19,14 +19,23 @@ export const aiProcess = (action, text, target_language) =>
 export const summarizeInbox = (email_text) =>
   client.post('/api/summarize-inbox', { email_text }).then((r) => r.data)
 
+export const getSummaries = (user_id = 'guest') =>
+  client.get('/api/summaries', { params: { user_id } }).then((r) => r.data)
+
+export const saveSummary = (payload) =>
+  client.post('/api/summaries', payload).then((r) => r.data)
+
+export const deleteSummary = (id) =>
+  client.delete(`/api/summaries/${id}`).then((r) => r.data)
+
 export const generateReplies = (email_text) =>
   client.post('/api/generate-replies', { email_text }).then((r) => r.data)
 
 export const analyzeSpamScore = (email_text) =>
   client.post('/api/spam-score', { email_text }).then((r) => r.data)
 
-export const getTemplates = () =>
-  client.get('/api/templates').then((r) => r.data)
+export const getTemplates = (user_id = 'guest') =>
+  client.get('/api/templates', { params: { user_id } }).then((r) => r.data)
 
 export const createTemplate = (payload) =>
   client.post('/api/templates', payload).then((r) => r.data)

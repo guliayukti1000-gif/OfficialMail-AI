@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { LayoutTemplate, ArrowRight, Plus, X } from 'lucide-react'
 import { Card, Spinner } from '../components/UI'
 import { getTemplates, createTemplate } from '../api'
+import { useAuth } from '../hooks/useAuth'
 
 export default function Templates() {
+  const { user } = useAuth()
   const [templates, setTemplates] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -14,8 +16,9 @@ export default function Templates() {
   const navigate = useNavigate()
 
   const load = () => {
+    if (!user) return
     setLoading(true)
-    getTemplates()
+    getTemplates(user.uid)
       .then(setTemplates)
       .catch(() =>
         setError('Could not load templates. Make sure the backend and Firebase are configured.')
@@ -23,7 +26,7 @@ export default function Templates() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(load, [])
+  useEffect(load, [user])
 
   const useTemplate = (tpl) => {
     sessionStorage.setItem('templateContent', tpl.content)
@@ -34,7 +37,7 @@ export default function Templates() {
     if (!newTemplate.title || !newTemplate.content) return
     setSaving(true)
     try {
-      await createTemplate(newTemplate)
+      await createTemplate({ ...newTemplate, user_id: user.uid })
       setNewTemplate({ title: '', category: '', content: '' })
       setShowForm(false)
       load()

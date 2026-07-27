@@ -66,13 +66,26 @@ class ReplyDraft(BaseModel):
 class GenerateRepliesResponse(BaseModel):
     replies: List[ReplyDraft]
 
+class SummaryHistoryItem(BaseModel):
+    id: Optional[str] = None
+    user_id: Optional[str] = "guest"
+    email_text: str
+    summary: str
+    important_dates: List[str] = []
+    important_people: List[str] = []
+    deadlines: List[str] = []
+    action_items: List[str] = []
+    priority: str = "Medium"
+    created_at: Optional[str] = None
+
 
 class TemplateModel(BaseModel):
     id: Optional[str] = None
     title: str
     category: str
     content: str
-
+    user_id: Optional[str] = "guest"
+    is_default: Optional[bool] = False
 
 class HistoryItem(BaseModel):
     id: Optional[str] = None

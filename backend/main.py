@@ -15,7 +15,7 @@ from models import (
     SpamScoreRequest, SpamScoreResponse,
     GenerateRepliesRequest, GenerateRepliesResponse,
     TemplateModel, HistoryItem, ExportRequest,
-    BulkGenerateEmailRequest,
+    BulkGenerateEmailRequest, SummaryHistoryItem,
 )
 
 from services import gemini_service, firebase_service, export_service
@@ -92,6 +92,30 @@ def summarize_inbox(payload: InboxSummaryRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/summaries")
+def list_summaries(user_id: str = "guest"):
+    try:
+        return firebase_service.get_summaries(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/summaries")
+def create_summary(item: SummaryHistoryItem):
+    try:
+        return firebase_service.save_summary_item(item.model_dump(exclude={"id", "created_at"}))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/summaries/{item_id}")
+def delete_summary(item_id: str):
+    try:
+        firebase_service.delete_summary_item(item_id)
+        return {"deleted": item_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/spam-score", response_model=SpamScoreResponse)
 def spam_score(payload: SpamScoreRequest):
@@ -112,10 +136,10 @@ def generate_replies(payload: GenerateRepliesRequest):
 
 
 @app.get("/api/templates")
-def list_templates():
+def list_templates(user_id: str = "guest"):
     try:
         firebase_service.seed_default_templates_if_empty()
-        return firebase_service.get_templates()
+        return firebase_service.get_templates(user_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -65,14 +65,17 @@ def delete_history_item(item_id: str):
 
 # ---------- Templates ----------
 
-def get_templates() -> list:
+def get_templates(user_id: str = "guest") -> list:
     db = get_db()
     docs = db.collection("templates").stream()
     results = []
     for doc in docs:
         d = doc.to_dict()
         d["id"] = doc.id
-        results.append(d)
+        # Show default templates (no user_id / is_default) to everyone,
+        # plus this user's own custom templates
+        if d.get("is_default") or not d.get("user_id") or d.get("user_id") == user_id:
+            results.append(d)
     return results
 
 
@@ -101,5 +104,36 @@ def seed_default_templates_if_empty():
     ]
     for title, category, content in defaults:
         db.collection("templates").document().set(
-            {"title": title, "category": category, "content": content}
+            {"title": title, "category": category, "content": content, "is_default": True}
         )
+# ---------- Inbox Summary History ----------
+
+def save_summary_item(item: dict) -> dict:
+    db = get_db()
+    item["created_at"] = datetime.datetime.utcnow().isoformat()
+    doc_ref = db.collection("summaries").document()
+    doc_ref.set(item)
+    item["id"] = doc_ref.id
+    return item
+
+
+def get_summaries(user_id: str = "guest", limit: int = 50) -> list:
+    db = get_db()
+    docs = (
+        db.collection("summaries")
+        .where("user_id", "==", user_id)
+        .order_by("created_at", direction=firestore.Query.DESCENDING)
+        .limit(limit)
+        .stream()
+    )
+    results = []
+    for doc in docs:
+        d = doc.to_dict()
+        d["id"] = doc.id
+        results.append(d)
+    return results
+
+
+def delete_summary_item(item_id: str):
+    db = get_db()
+    db.collection("summaries").document(item_id).delete()

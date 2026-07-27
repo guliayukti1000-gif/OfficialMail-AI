@@ -1,5 +1,9 @@
-import { NavLink } from 'react-router-dom'
-import { Mail, Home, PenSquare, Inbox, LayoutTemplate, History, Settings, Sparkles, Send, ShieldAlert } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { Mail, Home, PenSquare, Inbox, LayoutTemplate, History, Settings, Sparkles, Send, ShieldAlert, LogOut } from 'lucide-react'
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebase'
+import { useAuth } from '../hooks/useAuth'
+
 const links = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/generate', label: 'Generate Email', icon: PenSquare },
@@ -12,6 +16,14 @@ const links = [
 ]
 
 export default function Sidebar({ open, onClose }) {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await signOut(auth)
+    navigate('/login')
+  }
+
   return (
     <>
       {open && (
@@ -61,6 +73,21 @@ export default function Sidebar({ open, onClose }) {
           <p className="text-sm font-semibold leading-snug">Powered by Gemini</p>
           <p className="text-xs text-white/70 mt-1">Every email, precisely worded.</p>
         </div>
+
+        {user && (
+          <div className="px-3 pb-4">
+            <div className="flex items-center gap-2 px-3 py-2 text-xs text-ink-500 truncate">
+              {user.email}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-ink-700 hover:bg-surface-muted transition-colors"
+            >
+              <LogOut size={18} strokeWidth={2} />
+              Logout
+            </button>
+          </div>
+        )}
       </aside>
     </>
   )

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { Inbox, CalendarDays, Users, Clock4, ListChecks, ScanSearch, Briefcase, Smile, Zap } from 'lucide-react'
 import { Card, Spinner, PriorityBadge } from '../components/UI'
-import { summarizeInbox, generateReplies, aiProcess } from '../api'
+import { summarizeInbox, generateReplies, aiProcess, saveSummary } from '../api'
+import { useAuth } from '../hooks/useAuth'
+import useSessionState from '../hooks/useSessionState'
 
 function ListSection({ icon: Icon, title, items }) {
   if (!items || items.length === 0) return null
@@ -148,11 +150,12 @@ function ReplyPanel({ replies, onUpdate }) {
 }
 
 export default function InboxSummary() {
-  const [text, setText] = useState('')
-  const [result, setResult] = useState(null)
+  const { user } = useAuth()
+  const [text, setText] = useSessionState('inboxSummary_text', '')
+  const [result, setResult] = useSessionState('inboxSummary_result', null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [replies, setReplies] = useState(null)
+  const [replies, setReplies] = useSessionState('inboxSummary_replies', null)
   const [repliesLoading, setRepliesLoading] = useState(false)
 
   const handleSummarize = async () => {
@@ -166,6 +169,16 @@ export default function InboxSummary() {
     try {
       const data = await summarizeInbox(text)
       setResult(data)
+      saveSummary({
+        email_text: text,
+        summary: data.summary,
+        important_dates: data.important_dates,
+        important_people: data.important_people,
+        deadlines: data.deadlines,
+        action_items: data.action_items,
+        priority: data.priority,
+        user_id: user?.uid || 'guest',
+      }).catch(() => {})
       setRepliesLoading(true)
       generateReplies(text)
         .then((r) => setReplies(r.replies))

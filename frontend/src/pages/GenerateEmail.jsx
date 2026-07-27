@@ -5,6 +5,8 @@ import {
 } from 'lucide-react'
 import { Card, Spinner } from '../components/UI'
 import { generateEmail, aiProcess, exportEmail, saveHistory } from '../api'
+import { useAuth } from '../hooks/useAuth'
+import useSessionState from '../hooks/useSessionState'
 
 const TONES = ['Formal', 'Polite', 'Assertive', 'Persuasive', 'Neutral']
 const LANGUAGES = ['English', 'Hindi']
@@ -20,7 +22,8 @@ const editTools = [
 ]
 
 export default function GenerateEmail() {
-  const [form, setForm] = useState({
+  const { user } = useAuth()
+  const [form, setForm] = useSessionState('generateEmail_form', {
     purpose: '',
     recipient_name: '',
     recipient_designation: '',
@@ -30,7 +33,7 @@ export default function GenerateEmail() {
     language: 'English',
     length: 'Medium',
   })
-  const [email, setEmail] = useState(null)
+  const [email, setEmail] = useSessionState('generateEmail_result', null)
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(null) // which tool is running
   const [copied, setCopied] = useState(false)
@@ -62,6 +65,7 @@ export default function GenerateEmail() {
         subject: result.subject,
         body: `${result.greeting}\n\n${result.body}\n\n${result.closing}\n${result.signature}`,
         purpose: form.purpose,
+        user_id: user?.uid || 'guest',
       }).catch(() => {})
     } catch (e) {
       setError(e?.response?.data?.detail || 'Something went wrong while generating the email.')
