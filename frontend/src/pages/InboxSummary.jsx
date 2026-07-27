@@ -4,6 +4,8 @@ import { Card, Spinner, PriorityBadge } from '../components/UI'
 import { summarizeInbox, generateReplies, aiProcess, saveSummary } from '../api'
 import { useAuth } from '../hooks/useAuth'
 import useSessionState from '../hooks/useSessionState'
+import { useSpeech } from '../hooks/useSpeech'
+import { Volume2, VolumeX } from 'lucide-react'
 
 function ListSection({ icon: Icon, title, items }) {
   if (!items || items.length === 0) return null
@@ -151,6 +153,7 @@ function ReplyPanel({ replies, onUpdate }) {
 
 export default function InboxSummary() {
   const { user } = useAuth()
+  const { speak, stop, speaking } = useSpeech()
   const [text, setText] = useSessionState('inboxSummary_text', '')
   const [result, setResult] = useSessionState('inboxSummary_result', null)
   const [loading, setLoading] = useState(false)
@@ -219,7 +222,16 @@ export default function InboxSummary() {
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-semibold text-ink-900">Summary</h3>
-              <PriorityBadge priority={result.priority} />
+              <div className="flex items-center gap-2">
+                <PriorityBadge priority={result.priority} />
+                <button
+                  className="btn-secondary !px-2.5 !py-1.5 text-xs"
+                  onClick={() => (speaking ? stop() : speak(result.summary))}
+                >
+                  {speaking ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                  {speaking ? 'Stop' : 'Read Aloud'}
+                </button>
+              </div>
             </div>
             <p className="text-sm text-ink-700 leading-relaxed">{result.summary}</p>
 

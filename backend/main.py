@@ -19,6 +19,7 @@ from models import (
 )
 
 from services import gemini_service, firebase_service, export_service
+from firebase_admin import auth as firebase_auth
 
 app = FastAPI(title="OfficialMail AI API", version="1.0.0")
 
@@ -197,5 +198,14 @@ def export_email(payload: ExportRequest):
             raise HTTPException(status_code=400, detail="format must be 'pdf' or 'docx'")
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/account/{user_id}")
+def delete_account(user_id: str):
+    try:
+        firebase_service.delete_user_data(user_id)
+        firebase_auth.delete_user(user_id)
+        return {"deleted": user_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

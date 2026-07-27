@@ -49,6 +49,9 @@ export const saveHistory = (payload) =>
 export const deleteHistory = (id) =>
   client.delete(`/api/history/${id}`).then((r) => r.data)
 
+export const deleteAccount = (userId) =>
+  api.delete(`/api/account/${userId}`).then((r) => r.data)
+
 export const exportEmail = async (subject, body, format) => {
   const res = await client.post(
     '/api/export',

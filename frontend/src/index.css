@@ -7,8 +7,9 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-surface-soft text-ink-900 font-body antialiased;
+    @apply bg-surface-soft text-ink-900 font-body antialiased dark:bg-ink-900 dark:text-white transition-colors;
   }
+  
   h1, h2, h3, h4 {
     @apply font-display;
   }
@@ -19,22 +20,21 @@
 
 @layer components {
   .card {
-    @apply bg-white rounded-2xl border border-ink-300/40 shadow-card;
+    @apply bg-white rounded-2xl border border-ink-300/40 shadow-card dark:bg-ink-700 dark:border-white/10;
   }
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 text-white font-medium px-5 py-2.5 shadow-soft hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-white text-ink-700 font-medium px-5 py-2.5 border border-ink-300/60 hover:border-brand-400 hover:text-brand-600 transition-colors;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-white text-ink-700 font-medium px-5 py-2.5 border border-ink-300/60 hover:border-brand-400 hover:text-brand-600 transition-colors dark:bg-ink-700 dark:text-white dark:border-white/10;
   }
   .input-field {
-    @apply w-full rounded-xl border border-ink-300/60 bg-white px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-400 transition-shadow;
+    @apply w-full rounded-xl border border-ink-300/60 bg-white px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-400 transition-shadow dark:bg-ink-700 dark:text-white dark:border-white/10;
   }
   .label-text {
-    @apply block text-xs font-semibold uppercase tracking-wide text-ink-500 mb-1.5;
+    @apply block text-xs font-semibold uppercase tracking-wide text-ink-500 mb-1.5 dark:text-ink-300;
   }
 }
-
 :focus-visible {
   outline: 2px solid #2563EB;
   outline-offset: 2px;

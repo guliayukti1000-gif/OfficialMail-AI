@@ -12,6 +12,7 @@ class GenerateEmailRequest(BaseModel):
     language: str = "English"
     length: str = "Medium"
     user_id: Optional[str] = "guest"
+    sender_name: Optional[str] = ""
 
 
 class GeneratedEmail(BaseModel):

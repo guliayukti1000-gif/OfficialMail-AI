@@ -137,3 +137,12 @@ def get_summaries(user_id: str = "guest", limit: int = 50) -> list:
 def delete_summary_item(item_id: str):
     db = get_db()
     db.collection("summaries").document(item_id).delete()
+
+# ---------- Account Deletion ----------
+
+def delete_user_data(user_id: str):
+    db = get_db()
+    for collection_name in ["history", "summaries", "templates"]:
+        docs = db.collection(collection_name).where("user_id", "==", user_id).stream()
+        for doc in docs:
+            doc.reference.delete()

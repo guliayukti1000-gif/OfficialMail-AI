@@ -27,6 +27,7 @@ def _clean_json(text: str) -> str:
 
 def generate_email(data: dict) -> dict:
     model = _get_model()
+    sender_name = data.get('sender_name') or 'Your Name'
     prompt = f"""You are OfficialMail AI, an expert professional email writer.
 
 Write a {data['tone']} email in {data['language']} for the following context:
@@ -37,6 +38,7 @@ Recipient Designation: {data.get('recipient_designation') or 'N/A'}
 Organization: {data.get('organization') or 'N/A'}
 Key Points to include: {data['key_points']}
 Desired Length: {data['length']} (Short = 3-4 sentences, Medium = 1-2 short paragraphs, Long = 3+ paragraphs)
+Sender Name (sign the email with this exact name in the signature): {sender_name}
 
 Only formal, professional, respectful language is acceptable. Never use slang, emojis, or casual phrasing, regardless of the requested tone (tone only affects warmth, not professionalism).
 

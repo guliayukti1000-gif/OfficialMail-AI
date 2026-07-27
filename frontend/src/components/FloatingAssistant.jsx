@@ -1,8 +1,23 @@
-import { useState } from 'react'
-import { X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Volume2, VolumeX } from 'lucide-react'
+import { useSpeech } from '../hooks/useSpeech'
 
 export default function FloatingAssistant() {
   const [open, setOpen] = useState(false)
+  const { speak, stop, speaking } = useSpeech()
+
+  useEffect(() => {
+    return () => stop()
+  }, [])
+
+  const readPage = () => {
+    const main = document.querySelector('main') || document.body
+    const text = main.innerText
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 3000)
+    speak(text)
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
@@ -16,9 +31,16 @@ export default function FloatingAssistant() {
               <X size={16} />
             </button>
           </div>
-          <p className="text-xs text-ink-500">
+          <p className="text-xs text-ink-500 mb-3">
             Fill in the details and I'll draft a polished, professional email for you.
           </p>
+          <button
+            className="btn-primary w-full !py-2 text-xs"
+            onClick={() => (speaking ? stop() : readPage())}
+          >
+            {speaking ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            {speaking ? 'Stop Reading' : 'Read This Page'}
+          </button>
         </div>
       )}
 

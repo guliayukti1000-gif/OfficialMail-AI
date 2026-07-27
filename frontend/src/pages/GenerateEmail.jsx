@@ -7,6 +7,8 @@ import { Card, Spinner } from '../components/UI'
 import { generateEmail, aiProcess, exportEmail, saveHistory } from '../api'
 import { useAuth } from '../hooks/useAuth'
 import useSessionState from '../hooks/useSessionState'
+import { useSpeech } from '../hooks/useSpeech'
+import { Volume2, VolumeX } from 'lucide-react'
 
 const TONES = ['Formal', 'Polite', 'Assertive', 'Persuasive', 'Neutral']
 const LANGUAGES = ['English', 'Hindi']
@@ -23,6 +25,7 @@ const editTools = [
 
 export default function GenerateEmail() {
   const { user } = useAuth()
+  const { speak, stop, speaking } = useSpeech()
   const [form, setForm] = useSessionState('generateEmail_form', {
     purpose: '',
     recipient_name: '',
@@ -59,7 +62,8 @@ export default function GenerateEmail() {
     }
     setLoading(true)
     try {
-      const result = await generateEmail(form)
+      const savedPrefs = JSON.parse(localStorage.getItem('officialmail_prefs') || '{}')
+      const result = await generateEmail({ ...form, sender_name: savedPrefs.name || '' })
       setEmail(result)
       saveHistory({
         subject: result.subject,
@@ -225,6 +229,13 @@ export default function GenerateEmail() {
                 </button>
                 <button className="btn-secondary" onClick={() => exportEmail(email.subject, fullBody(), 'docx')}>
                   <FileText size={16} /> Download DOCX
+                </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => (speaking ? stop() : speak(fullBody()))}
+                >
+                  {speaking ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                  {speaking ? 'Stop' : 'Read Aloud'}
                 </button>
               </div>
             </Card>
