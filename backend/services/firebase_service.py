@@ -86,6 +86,19 @@ def add_template(template: dict) -> dict:
     template["id"] = doc_ref.id
     return template
 
+def update_template(template_id: str, updates: dict) -> dict:
+    db = get_db()
+    doc_ref = db.collection("templates").document(template_id)
+    doc_ref.update(updates)
+    updated = doc_ref.get().to_dict()
+    updated["id"] = template_id
+    return updated
+
+
+def delete_template(template_id: str):
+    db = get_db()
+    db.collection("templates").document(template_id).delete()
+
 
 def seed_default_templates_if_empty():
     db = get_db()

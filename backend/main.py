@@ -152,6 +152,23 @@ def create_template(template: TemplateModel):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.put("/api/templates/{template_id}")
+def update_template(template_id: str, template: TemplateModel):
+    try:
+        updates = template.model_dump(exclude={"id"})
+        return firebase_service.update_template(template_id, updates)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/templates/{template_id}")
+def delete_template(template_id: str):
+    try:
+        firebase_service.delete_template(template_id)
+        return {"deleted": template_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/api/history")
 def list_history(user_id: str = "guest"):

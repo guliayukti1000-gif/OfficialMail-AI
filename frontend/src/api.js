@@ -40,6 +40,12 @@ export const getTemplates = (user_id = 'guest') =>
 export const createTemplate = (payload) =>
   client.post('/api/templates', payload).then((r) => r.data)
 
+export const updateTemplate = (id, payload) =>
+  client.put(`/api/templates/${id}`, payload).then((r) => r.data)
+
+export const deleteTemplate = (id) =>
+  client.delete(`/api/templates/${id}`).then((r) => r.data)
+
 export const getHistory = (user_id = 'guest') =>
   client.get('/api/history', { params: { user_id } }).then((r) => r.data)
 
