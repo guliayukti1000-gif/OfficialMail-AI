@@ -1,20 +1,33 @@
 /** @type {import('tailwindcss').Config} */
+
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+
+  darkMode: 'class',
+
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx}"
+  ],
+
   theme: {
+
     extend: {
+
       colors: {
+
         ink: {
           900: '#0F172A',
           700: '#334155',
           500: '#64748B',
           300: '#CBD5E1',
         },
+
         surface: {
           DEFAULT: '#FFFFFF',
           soft: '#F8FAFC',
           muted: '#F1F5F9',
         },
+
         brand: {
           50: '#EFF6FF',
           100: '#DBEAFE',
@@ -23,40 +36,126 @@ export default {
           600: '#1D4ED8',
           900: '#1E3A8A',
         },
+
       },
+
+
       fontFamily: {
-        display: ['"Plus Jakarta Sans"', 'sans-serif'],
-        body: ['"Inter"', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'monospace'],
+
+        display: [
+          '"Plus Jakarta Sans"',
+          'sans-serif'
+        ],
+
+        body: [
+          '"Inter"',
+          'sans-serif'
+        ],
+
+        mono: [
+          '"IBM Plex Mono"',
+          'monospace'
+        ],
+
       },
+
+
       boxShadow: {
-        soft: '0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.06)',
-        card: '0 2px 8px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.06)',
-        glow: '0 0 0 4px rgba(37, 99, 235, 0.08)',
+
+        soft:
+        '0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.06)',
+
+        card:
+        '0 2px 8px rgba(15,23,42,0.05), 0 8px 24px rgba(15,23,42,0.06)',
+
+        glow:
+        '0 0 0 4px rgba(37,99,235,0.08)',
+
       },
+
+
       borderRadius: {
+
         xl: '14px',
         '2xl': '20px',
+
       },
+
+
       keyframes: {
+
         float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-8px)' },
+
+          '0%, 100%': {
+            transform: 'translateY(0px)'
+          },
+
+          '50%': {
+            transform: 'translateY(-8px)'
+          },
+
         },
+
+
         drift: {
-          '0%, 100%': { transform: 'translate(0px, 0px)' },
-          '50%': { transform: 'translate(30px, -25px)' },
+
+          '0%, 100%': {
+            transform: 'translate(0px,0px)'
+          },
+
+          '50%': {
+            transform: 'translate(30px,-25px)'
+          },
+
         },
+
+
         wave: {
-          '0%, 100%': { transform: 'scaleY(0.4)' },
-          '50%': { transform: 'scaleY(1)' },
+
+          '0%, 100%': {
+            transform: 'scaleY(0.4)'
+          },
+
+          '50%': {
+            transform: 'scaleY(1)'
+          },
+
         },
+
+
         blink: {
-          '0%, 90%, 100%': { transform: 'scaleY(1)' },
-          '95%': { transform: 'scaleY(0.1)' },
+
+          '0%, 90%, 100%': {
+            transform: 'scaleY(1)'
+          },
+
+          '95%': {
+            transform: 'scaleY(0.1)'
+          },
+
         },
+
       },
+
+
+      animation: {
+
+        float: 'float 3s ease-in-out infinite',
+
+        drift: 'drift 8s ease-in-out infinite',
+
+        wave: 'wave 1s ease-in-out infinite',
+
+        blink: 'blink 4s infinite',
+
+      },
+
+
     },
+
   },
+
+
   plugins: [],
+
 }

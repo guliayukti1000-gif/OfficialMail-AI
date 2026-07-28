@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem('officialmail_theme') || 'light')
+  const [theme, setTheme] = useState(() => localStorage.getItem('officialmail_theme') || 'dark')
 
   useEffect(() => {
     const root = document.documentElement

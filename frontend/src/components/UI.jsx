@@ -1,5 +1,9 @@
 export function Card({ children, className = '' }) {
-  return <div className={`card p-6 ${className}`}>{children}</div>
+  return (
+    <div className={`rounded-2xl backdrop-blur-xl bg-white/[0.04] border border-white/10 p-6 ${className}`}>
+      {children}
+    </div>
+  )
 }
 
 export function Spinner({ className = '' }) {
@@ -12,9 +16,9 @@ export function Spinner({ className = '' }) {
 
 export function PriorityBadge({ priority }) {
   const styles = {
-    High: 'bg-red-50 text-red-600 border-red-200',
-    Medium: 'bg-amber-50 text-amber-600 border-amber-200',
-    Low: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+    High: 'bg-red-500/10 text-red-400 border-red-500/30',
+    Medium: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    Low: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
   }
   return (
     <span

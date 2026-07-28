@@ -57,8 +57,8 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-soft">
-        <p className="text-sm text-ink-500">Loading…</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#0B0F1A]">
+        <p className="text-sm text-slate-400">Loading…</p>
       </div>
     )
   }

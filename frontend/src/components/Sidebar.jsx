@@ -38,7 +38,7 @@ export default function Sidebar({ open, onClose }) {
         }`}
       >
         <div className="flex items-center gap-2 px-6 py-6">
-          <div className="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center shadow-glow">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.35)]">
             <Mail size={18} className="text-white" />
           </div>
           <div>
@@ -68,7 +68,7 @@ export default function Sidebar({ open, onClose }) {
           ))}
         </nav>
 
-        <div className="m-3 p-4 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-900 text-white">
+        <div className="m-3 p-4 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 border border-white/10 text-white">
           <Sparkles size={18} className="mb-2" />
           <p className="text-sm font-semibold leading-snug">Powered by Gemini</p>
           <p className="text-xs text-white/70 mt-1">Every email, precisely worded.</p>
