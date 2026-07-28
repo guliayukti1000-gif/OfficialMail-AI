@@ -42,94 +42,98 @@ export default function History() {
   } else if (sortBy === 'Newest first') {
     sortedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   }
-  // 'Priority' sort is handled inside groupByDate (priority-first within each date group)
 
   const groups = groupByDate(sortedItems)
 
   return (
-    <div className="max-w-4xl">
-      <h2 className="font-display font-bold text-2xl text-ink-900 mb-1">History</h2>
-      <p className="text-ink-500 mb-5">Everything you've generated and analyzed, saved automatically.</p>
+    <div className="relative">
+      <div className="absolute top-[-100px] left-[10%] w-72 h-72 rounded-full bg-blue-500 opacity-[0.15] blur-3xl animate-[drift_9s_ease-in-out_infinite] pointer-events-none" />
+      <div className="absolute bottom-[-80px] right-[5%] w-80 h-80 rounded-full bg-purple-600 opacity-[0.15] blur-3xl animate-[drift_11s_ease-in-out_infinite] pointer-events-none" />
 
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setTab('emails')}
-            className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              tab === 'emails' ? 'bg-brand-50 text-brand-600' : 'text-ink-500 hover:bg-surface-muted'
-            }`}
-          >
-            Generated Emails
-          </button>
-          <button
-            onClick={() => setTab('summaries')}
-            className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              tab === 'summaries' ? 'bg-brand-50 text-brand-600' : 'text-ink-500 hover:bg-surface-muted'
-            }`}
-          >
-            Inbox Summaries
-          </button>
-        </div>
+      <div className="relative max-w-4xl">
+        <h2 className="font-display font-bold text-2xl text-white mb-1">History</h2>
+        <p className="text-slate-400 mb-5">Everything you've generated and analyzed, saved automatically.</p>
 
-        <select
-          className="input-field !w-auto text-sm"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          {SORT_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
-        </select>
-      </div>
-
-      {loading && (
-        <div className="flex items-center gap-2 text-ink-500 text-sm">
-          <Spinner className="border-brand-300 border-t-brand-600" /> Loading history…
-        </div>
-      )}
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
-      {!loading && items.length === 0 && !error && (
-        <Card className="text-center py-16 border-dashed">
-          <HistoryIcon size={26} className="text-ink-300 mx-auto mb-3" />
-          <p className="text-sm text-ink-500">
-            {tab === 'emails' ? 'No emails generated yet.' : 'No summaries available.'}
-          </p>
-        </Card>
-      )}
-
-      <div className="space-y-6">
-        {groups.map((group) => (
-          <div key={group.label}>
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-500 mb-2">{group.label}</h4>
-            <div className="space-y-3">
-              {group.items.map((item) => (
-                <Card key={item.id} className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-ink-900 truncate">
-                        {tab === 'emails' ? item.subject : item.summary?.slice(0, 60) + '...'}
-                      </h3>
-                      {tab === 'summaries' && item.priority && <PriorityBadge priority={item.priority} />}
-                    </div>
-                    <p className="text-sm text-ink-500 mt-1 line-clamp-2">
-                      {tab === 'emails' ? item.body : item.email_text}
-                    </p>
-                    <p className="flex items-center gap-1 text-xs text-ink-500 mt-2 font-mono">
-                      <Clock size={12} />
-                      {item.created_at ? new Date(item.created_at).toLocaleString() : ''}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="p-2 rounded-lg text-ink-500 hover:text-red-600 hover:bg-red-50 shrink-0"
-                    aria-label="Delete"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </Card>
-              ))}
-            </div>
+        <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setTab('emails')}
+              className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                tab === 'emails' ? 'bg-white/10 text-blue-400' : 'text-slate-400 hover:bg-white/5'
+              }`}
+            >
+              Generated Emails
+            </button>
+            <button
+              onClick={() => setTab('summaries')}
+              className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                tab === 'summaries' ? 'bg-white/10 text-blue-400' : 'text-slate-400 hover:bg-white/5'
+              }`}
+            >
+              Inbox Summaries
+            </button>
           </div>
-        ))}
+
+          <select
+            className="input-field !w-auto text-sm"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            {SORT_OPTIONS.map((opt) => <option key={opt} className="bg-[#161C2E]">{opt}</option>)}
+          </select>
+        </div>
+
+        {loading && (
+          <div className="flex items-center gap-2 text-slate-400 text-sm">
+            <Spinner className="border-white/20 border-t-white" /> Loading history…
+          </div>
+        )}
+        {error && <p className="text-sm text-red-400">{error}</p>}
+
+        {!loading && items.length === 0 && !error && (
+          <Card className="text-center py-16 border-dashed border-white/10">
+            <HistoryIcon size={26} className="text-slate-500 mx-auto mb-3" />
+            <p className="text-sm text-slate-400">
+              {tab === 'emails' ? 'No emails generated yet.' : 'No summaries available.'}
+            </p>
+          </Card>
+        )}
+
+        <div className="space-y-6">
+          {groups.map((group) => (
+            <div key={group.label}>
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">{group.label}</h4>
+              <div className="space-y-3">
+                {group.items.map((item) => (
+                  <Card key={item.id} className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-white truncate">
+                          {tab === 'emails' ? item.subject : item.summary?.slice(0, 60) + '...'}
+                        </h3>
+                        {tab === 'summaries' && item.priority && <PriorityBadge priority={item.priority} />}
+                      </div>
+                      <p className="text-sm text-slate-400 mt-1 line-clamp-2">
+                        {tab === 'emails' ? item.body : item.email_text}
+                      </p>
+                      <p className="flex items-center gap-1 text-xs text-slate-500 mt-2 font-mono">
+                        <Clock size={12} />
+                        {item.created_at ? new Date(item.created_at).toLocaleString() : ''}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-white/5 shrink-0"
+                      aria-label="Delete"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
