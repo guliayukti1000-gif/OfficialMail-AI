@@ -37,6 +37,22 @@ export default {
           900: '#1E3A8A',
         },
 
+        // Ink blue + amber theme (current redesign)
+        night: {
+          DEFAULT: '#080A14',
+          panel: '#0B0F1C',
+          glass: '#131A2E',
+        },
+
+        accent: {
+          DEFAULT: '#3D5AFE',
+          dim: '#1C2560',
+        },
+
+        flare: {
+          DEFAULT: '#F5A623',
+        },
+
       },
 
 
@@ -70,6 +86,10 @@ export default {
 
         glow:
         '0 0 0 4px rgba(37,99,235,0.08)',
+
+        // Amber glow for the new theme's buttons/hero
+        flareGlow:
+        '0 0 24px rgba(245,166,35,0.35)',
 
       },
 
@@ -135,6 +155,36 @@ export default {
 
         },
 
+        // Big wink + bounce, for the robot mascot every ~10s
+        bigWink: {
+
+          '0%, 78%, 90%, 100%': {
+            transform: 'scaleY(1)'
+          },
+
+          '82%, 86%': {
+            transform: 'scaleY(0.1)'
+          },
+
+        },
+
+        // Page-load blur-in reveal
+        blurIn: {
+
+          '0%': {
+            filter: 'blur(14px)',
+            opacity: '0',
+            transform: 'translateY(14px)'
+          },
+
+          '100%': {
+            filter: 'blur(0px)',
+            opacity: '1',
+            transform: 'translateY(0px)'
+          },
+
+        },
+
       },
 
 
@@ -147,6 +197,10 @@ export default {
         wave: 'wave 1s ease-in-out infinite',
 
         blink: 'blink 4s infinite',
+
+        'big-wink': 'bigWink 10s ease-in-out infinite',
+
+        'blur-in': 'blurIn 0.9s cubic-bezier(0.22,1,0.36,1) both',
 
       },
 

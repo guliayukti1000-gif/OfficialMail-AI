@@ -13,6 +13,7 @@ import BulkSend from "./pages/BulkSend"
 import SpamChecker from "./pages/SpamChecker"
 import Login from "./pages/Login"
 import { useAuth } from './hooks/useAuth'
+import AppIntro from "./pages/AppIntro"
 
 const TITLES = {
   '/': ['Home', 'Welcome back — draft your next email in seconds.'],
@@ -65,8 +66,9 @@ export default function App() {
 
   return (
     <Routes>
+      <Route path="/welcome" element={user ? <Navigate to="/" /> : <AppIntro />} />
       <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-      <Route path="/*" element={user ? <AppShell /> : <Navigate to="/login" />} />
+      <Route path="/*" element={user ? <AppShell /> : <Navigate to="/welcome" />} />
     </Routes>
   )
 }
